@@ -34,6 +34,21 @@ http.route({
     });
   }),
 });
+http.route({
+  path: "/end",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const phone = await req.text();
+    console.log({ phone });
+    const resp = await ctx.runMutation(api.myFunctions.end, { phone });
+    return new Response(JSON.stringify(resp), {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+  }),
+});
 
 http.route({
   path: "/add",
@@ -41,8 +56,8 @@ http.route({
   handler: httpAction(async (ctx, req) => {
     const body = await req.json();
     console.log({ body });
-    const code = await ctx.runMutation(api.myFunctions.addLine, body);
-    return new Response(JSON.stringify(code), {
+    const resp = await ctx.runMutation(api.myFunctions.addLine, body);
+    return new Response(JSON.stringify(resp), {
       status: 200,
       headers: {
         "content-type": "application/json",

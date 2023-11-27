@@ -28,7 +28,7 @@ export const start = mutation({
 export const join = mutation({
   args: { phone: v.string(), code: v.string() },
   handler: async (ctx, args) => {
-    const story = await getStoryByCode(ctx, args.code);
+    const story = await getStoryByCode(ctx, args.code.toUpperCase());
     if (story.over) {
       throw new ConvexError("story is over");
     }
@@ -78,15 +78,15 @@ export const end = mutation({
     if (!player) {
       throw new ConvexError("no player found");
     }
-    if (!player.turn) {
-      throw new ConvexError("not your turn");
-    }
+    // if (!player.turn) {
+    //   throw new ConvexError("not your turn");
+    // }
     if (!story) {
       throw new ConvexError("no story found");
     }
-    if (story.over) {
-      throw new ConvexError("story is over");
-    }
+    // if (story.over) {
+    //   throw new ConvexError("story is over");
+    // }
     await ctx.db.patch(story._id, { over: true });
     const players = await ctx.db
       .query("players")
@@ -95,6 +95,8 @@ export const end = mutation({
     return {
       phones: players.map((p) => p.phone),
       url: process.env.CONVEX_SITE_URL + "/view?code=" + story.code,
+      lines: story.lines,
+      story: story.lines.join("\n"),
     };
   },
 });
